@@ -73,6 +73,8 @@ Before beginning the gap analysis, ensure the following are available:
 - Incident response plans and business continuity documentation
 - Any prior audit reports (internal or external) and corrective action logs
 - Vendor and third-party service agreements
+- Inherited-control mapping documents (parent managed-service agreements, group procurement frameworks, subcontractor chains)
+- Supplier SLA appendices with scope definitions, review dates, and domain-specific obligations
 
 ## Constraints
 
@@ -107,6 +109,7 @@ Document all relevant interested parties and their requirements:
 | Employees                 | Privacy, safe working environment               | Employment law        |
 | Board / Shareholders      | Risk management, business continuity            | Governance framework  |
 | Suppliers / Partners      | Secure data exchange, interoperability          | Agreements            |
+| Inherited-Control Owners  | Control mapping, evidence currency, SLA scope   | Parent agreements     |
 ```
 
 #### 1.3 ISMS Scope Statement (Clause 4.3)
@@ -229,6 +232,41 @@ Use the following maturity scoring:
 **A.5.21 Managing information security in the ICT supply chain** — Processes for ICT supply chain security.
 **A.5.22 Monitoring, review, and change management of supplier services** — Monitor, review, evaluate, manage changes.
 **A.5.23 Information security for use of cloud services** — Acquisition, use, management, exit processes established (new in 2022).
+
+##### Supplier SLA Inherited-Control Evidence Gates (A.5.19–A.5.23)
+
+When assessing supplier-related controls (A.5.19, A.5.20, A.5.21, A.5.22, A.5.23), apply the following inherited-control evidence gates **before** flagging missing local evidence:
+
+**Gate 1 — Inherited-Control Source Verification**
+- If supplier SLA evidence is inherited from a parent managed-service agreement, group procurement framework, or subcontractor chain, verify:
+  - The inherited-control mapping document explicitly names the supplier and control(s) covered
+  - The parent agreement scope includes the ISMS scope being audited
+  - A designated control owner is assigned for the inherited control
+
+**Gate 2 — SLA Domain Coverage Validation**
+- Availability SLA evidence does **not** satisfy incident-response or vulnerability-response control requirements
+- Each SLA domain (availability, incident response, vulnerability management, data protection, business continuity) must map to the specific control(s) it covers
+- Flag as a gap when an SLA covers one domain but is cited as evidence for a control in a different domain (e.g., uptime SLA cited for A.5.24 incident management)
+
+**Gate 3 — Evidence Currency Check**
+- Verify the inherited evidence references the **current** SLA appendix, not a superseded version
+- Check that the supplier contract renewal date and SLA appendix version are documented
+- Flag stale inherited evidence when the parent agreement has changed renewal terms but the ISO evidence pack still references the old appendix
+
+**Gate 4 — Excluded SLA Domains Documentation**
+- Document which SLA domains are **not** covered by the inherited control
+- For each excluded domain, require justification and an alternative evidence source
+
+**Gate 5 — Inherited-Control Ownership and Review**
+- Confirm the control owner has reviewed the inherited evidence within the defined review cycle
+- Record the owner review date; flag as observation if review is overdue
+
+**Negative Case — Availability SLA Misapplied to Security Response Controls:**
+If a SaaS supplier's uptime/availability SLA is cited as evidence for controls requiring security incident response commitments (e.g., A.5.24, A.5.25, A.5.26), this is a gap — availability SLAs do not prove incident response or vulnerability response time commitments.
+
+**Negative Case — Stale Inherited Evidence:**
+If the parent supplier contract has changed renewal terms but the ISO evidence pack still references the old SLA appendix, this is a gap — the control cannot be marked as implemented based on superseded evidence.
+
 **A.5.24 Information security incident management planning and preparation** — Plan and prepare response.
 **A.5.25 Assessment and decision on information security events** — Assess and decide classification.
 **A.5.26 Response to information security incidents** — Respond according to procedures.
@@ -413,6 +451,17 @@ Classify each finding using the following severity levels:
 ## Risk Assessment Findings
 [Summary of risk methodology review, gaps in risk register, treatment plan status]
 
+## Supplier SLA Inherited-Control Evidence Review
+
+| Supplier | Parent Agreement | Controls Covered | SLA Domains | Evidence Currency | Owner | Review Date | Status |
+|----------|-----------------|------------------|-------------|-------------------|-------|-------------|--------|
+| [name] | [agreement ID] | [A.5.x list] | [availability, incident-response, ...] | [current/stale] | [name] | [date] | [conforming/gap] |
+
+- **Inherited controls verified**: [count]
+- **SLA domain mismatches flagged**: [count] — availability SLA cited for security response controls
+- **Stale evidence flagged**: [count] — inherited reference does not match current contract appendix
+- **Missing inherited-control mapping**: [count] — no parent agreement documentation available
+
 ## Prioritized Remediation Roadmap
 
 ### Phase 1: Critical (0-30 days)
@@ -512,6 +561,10 @@ Each control in ISO 27002:2022 is tagged with five attributes:
 4. **Neglecting the 11 new controls introduced in the 2022 revision.** Organizations transitioning from 2013 often miss that controls like A.5.7 (Threat intelligence), A.5.23 (Cloud services security), A.8.9 (Configuration management), A.8.11 (Data masking), A.8.12 (Data leakage prevention), and A.8.16 (Monitoring activities) require explicit consideration in the SoA even if determined not applicable.
 
 5. **Scope exclusions without adequate justification.** Excluding organizational units, locations, or controls from ISMS scope requires documented justification demonstrating the exclusion does not affect the organization's ability or responsibility to provide information security. Auditors will challenge poorly justified exclusions.
+
+6. **Accepting inherited supplier SLA evidence without validating scope, domain coverage, and currency.** Inherited controls from parent managed-service agreements can be valid, but auditors expect: (a) the inherited-control mapping explicitly names the supplier and covered controls, (b) SLA domain coverage matches the control requirement (availability SLA ≠ incident response SLA), (c) evidence references the current contract appendix, not a superseded version, and (d) a designated control owner has reviewed the inherited evidence within the defined cycle. Missing any of these is a gap, not an observation.
+
+7. **Reusing availability SLA evidence for security response controls.** A SaaS supplier's uptime SLA may satisfy availability controls (A.8.14, A.8.15) but does not prove incident response or vulnerability response commitments required by A.5.24, A.5.25, A.5.26. Each SLA domain must map to the specific control(s) it covers.
 
 ---
 
