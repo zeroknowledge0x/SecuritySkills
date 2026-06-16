@@ -187,6 +187,33 @@ Evaluate the risk assessment process:
 - Risk treatment plan is formulated and approved by risk owners
 - Residual risk is accepted by risk owners
 
+#### 3.3 Threat Intelligence → Risk Register Evidence Gates
+
+When assessing A.5.7 (Threat intelligence) in conjunction with the risk assessment process (Clauses 6.1.2 and 6.1.3), apply the following evidence gates to avoid false positives and catch coverage gaps:
+
+**Gate 1 — Relevance Decision (not raw feed volume).**
+A threat intelligence feed that is documented as "advisory only" and feeds a periodic (e.g., quarterly) risk review workflow is not automatically an ISO gap. The reviewer must verify that a documented *relevance decision* exists: which feed items were deemed operationally relevant to the ISMS scope and why. Mere ingestion of intelligence without a relevance triage is a gap; a documented advisory-only workflow with periodic triage is not.
+
+**Gate 2 — Relevant intelligence must produce traceable risk-register evidence.**
+When threat intelligence is assessed as relevant (e.g., a sector-specific ransomware advisory affecting a critical supplier), the reviewer must verify that a corresponding risk-register item or treatment decision exists. The evidence chain is: intelligence source → relevance decision → risk-register item (or explicit acceptance that no new item is needed with justification) → treatment owner → residual score → review timestamp. A break in this chain is a coverage gap.
+
+**Gate 3 — Severity-change triggers risk-register freshness.**
+When a threat feed's severity classification changes (e.g., medium → critical), the reviewer must check whether the linked risk-register residual score and owner review have been updated. A stale residual score after a severity escalation is a coverage gap. Evidence required: (a) date of severity change, (b) date of risk-register review/update (must be after the severity change), (c) updated residual score reflecting the new severity.
+
+**Gate 4 — Owner and timestamp are mandatory for intel-linked risk items.**
+Every risk-register item linked to threat intelligence must have: (a) an assigned treatment owner, (b) a review timestamp, (c) a treatment decision (mitigate, accept, avoid, transfer). Missing owner or timestamp on intel-linked items is a minor nonconformity; missing treatment decision is a major nonconformity.
+
+**False-positive indicators (do NOT flag as gaps):**
+- Intelligence feed is documented as advisory-only and feeds a periodic risk review with documented triage outcomes.
+- Intelligence is supplier-only or regional-only and is explicitly out of ISMS scope with justification.
+- Intelligence window has expired (e.g., advisory for a vulnerability already patched in scope systems).
+- Duplicate feed items already captured in an existing risk-register entry.
+
+**Negative test cases (must be caught):**
+- Sector-specific ransomware advisory affects a critical supplier → no risk-register item or treatment decision exists. *This is a gap.*
+- Threat feed severity changes from medium to critical → risk-register residual score and owner review stay unchanged. *This is a gap.*
+- Intelligence is marked relevant in triage → no owner assigned, no review timestamp on the risk-register item. *This is a minor nonconformity.*
+
 ---
 
 ### Step 4: Annex A Control Assessment
@@ -212,7 +239,7 @@ Use the following maturity scoring:
 **A.5.4 Management responsibilities** — Management requires personnel to apply information security per policies.
 **A.5.5 Contact with authorities** — Establish/maintain contact with relevant authorities.
 **A.5.6 Contact with special interest groups** — Establish/maintain contact with security forums and professional associations.
-**A.5.7 Threat intelligence** — Collect and analyze threat intelligence (new in 2022).
+**A.5.7 Threat intelligence** — Collect and analyze threat intelligence; produce relevance decisions that link operationally relevant intelligence to risk-register items (new in 2022). See "Threat Intelligence → Risk Register Evidence Gates" below for detailed assessment criteria.
 **A.5.8 Information security in project management** — Integrated into project management.
 **A.5.9 Inventory of information and other associated assets** — Developed and maintained.
 **A.5.10 Acceptable use of information and other associated assets** — Rules identified, documented, implemented.
@@ -413,6 +440,14 @@ Classify each finding using the following severity levels:
 ## Risk Assessment Findings
 [Summary of risk methodology review, gaps in risk register, treatment plan status]
 
+### Threat Intelligence → Risk Register Linkage
+
+| Intelligence Source | Relevance Decision | Risk-Register Item | Treatment Owner | Residual Score | Review Timestamp | Gap? |
+|---------------------|--------------------|--------------------|-----------------|----------------|------------------|------|
+| [source] | [relevant/advisory-only/not-applicable] | [item ID or "none"] | [name/role] | [score] | [date] | [yes/no + detail] |
+
+Document all threat intelligence sources reviewed and their linkage to risk-register items. Flag any breaks in the evidence chain as findings.
+
 ## Prioritized Remediation Roadmap
 
 ### Phase 1: Critical (0-30 days)
@@ -512,6 +547,10 @@ Each control in ISO 27002:2022 is tagged with five attributes:
 4. **Neglecting the 11 new controls introduced in the 2022 revision.** Organizations transitioning from 2013 often miss that controls like A.5.7 (Threat intelligence), A.5.23 (Cloud services security), A.8.9 (Configuration management), A.8.11 (Data masking), A.8.12 (Data leakage prevention), and A.8.16 (Monitoring activities) require explicit consideration in the SoA even if determined not applicable.
 
 5. **Scope exclusions without adequate justification.** Excluding organizational units, locations, or controls from ISMS scope requires documented justification demonstrating the exclusion does not affect the organization's ability or responsibility to provide information security. Auditors will challenge poorly justified exclusions.
+
+6. **Treating all threat intelligence feed items as ISO gaps without a relevance gate.** A.5.7 requires organizations to collect *and analyze* threat intelligence — not to act on every feed item. Flagging advisory-only feeds that have documented periodic triage as gaps produces false positives. Conversely, failing to verify that relevant intelligence (e.g., sector-specific ransomware advisories affecting critical suppliers) produces traceable risk-register items is a coverage gap. Always apply the relevance decision → risk-register evidence chain.
+
+7. **Ignoring risk-register freshness after threat severity changes.** When a threat intelligence source changes severity (e.g., medium → critical), the linked risk-register residual score and owner review must be updated. Stale scores after escalation are a common audit finding that static checklist reviews miss.
 
 ---
 
