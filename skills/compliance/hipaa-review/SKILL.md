@@ -13,7 +13,7 @@ phase: [assess, operate]
 frameworks: [HIPAA-Security-Rule, 45-CFR-164-Subpart-C]
 difficulty: intermediate
 time_estimate: "60-120min"
-version: "1.0.1"
+version: "1.0.2"
 author: unitoneai
 license: MIT
 allowed-tools: Read, Grep, Glob
@@ -399,6 +399,63 @@ Assess:
 
 ---
 
+### Step 8: Telehealth Recording Retention and Consent Gates
+
+Telehealth session recordings that contain ePHI require explicit evidence gates linking each retained recording to a valid consent artifact, a documented retention basis, and proof of lawful deletion. A long retention period is not automatically a HIPAA violation when consent, purpose limitation, access controls, and legal-retention basis are documented — but the burden is on the organization to prove this linkage for every retained recording.
+
+#### 8.1 Recording-to-Consent Linkage Evidence
+
+For each telehealth recording system in scope, verify:
+
+```
+Recording-to-Consent Checklist:
+- [ ] Each retained recording is joinable to its consent artifact by a unique recording ID or session ID
+- [ ] Consent records include: patient identifier, date/time of consent, scope (recording purpose), and consent version
+- [ ] Consent metadata is stored in the same system as — or joined to — recording metadata (not siloed in a scheduling-only system)
+- [ ] Automated validation exists to flag recordings with no matching consent or stale/expired consent
+- [ ] Retention basis is documented per recording or recording cohort (treatment, legal hold, patient request, regulatory requirement)
+- [ ] Evidence artifacts: database join queries, consent-to-recording reconciliation reports, automated gap-flagging output
+```
+
+**Common gap — Consent siloed in scheduling system:** If the telehealth platform records sessions by default but consent is captured only in a scheduling system that is not joined to recording metadata, auditors cannot prove each retained recording has valid consent and purpose limitation. This is a non-compliance finding under 164.312(b) (Audit Controls) and 164.316(a) (Policies and Procedures).
+
+#### 8.2 Legal Hold and Exception Review Gates
+
+Verify that recordings placed under legal hold or retention exception are subject to review gates:
+
+```
+Legal Hold / Exception Checklist:
+- [ ] Legal hold status is recorded per recording with: hold ID, authority/requestor, date placed, and scheduled review date
+- [ ] Hold releases are tracked — when a hold expires or is released, the recording re-enters the normal retention/deletion pipeline
+- [ ] Emergency care recordings have a documented retention path that accounts for delayed/implied consent differences
+- [ ] Minor/guardian consent recordings have age-appropriate retention and deletion rules documented
+- [ ] Interpreter recordings have consent artifacts covering both the patient and interpreter language/role
+- [ ] State-specific retention overrides are documented per jurisdiction with legal citation
+- [ ] Research-use consent recordings have IRB-approved retention and re-consent schedules
+- [ ] Exception owners are named individuals (not teams) with documented review dates
+- [ ] Evidence artifacts: hold registry export, hold-release audit log, exception owner assignments
+```
+
+**Common gap — Permanent legal hold:** If the recording deletion job skips sessions under legal hold but never rechecks hold release, temporary exceptions become permanent PHI retention. This creates an evidence gap where ePHI is retained indefinitely without a valid basis, violating the retention limitation principle and creating unnecessary breach exposure. Flag as non-compliance under 164.310(d)(2)(i) (Disposal) and require a hold-recheck gate.
+
+#### 8.3 Deletion Job Evidence and Audit Sampling
+
+Verify that deletion of recordings actually occurs after consent expiry or hold release:
+
+```
+Deletion Evidence Checklist:
+- [ ] Automated deletion job exists for recordings past their retention period
+- [ ] Deletion job logs record: recording ID, deletion date, retention basis, consent/hold status at deletion
+- [ ] Deletion job does NOT silently skip records — skipped records require explicit hold/exception documentation
+- [ ] Periodic audit sample is performed: select N random deleted recordings and verify consent-expiry → deletion chain
+- [ ] Undeleted recordings past retention are flagged in a reconciliation report with reason codes
+- [ ] Evidence artifacts: deletion job logs, audit sample report, reconciliation exception report
+```
+
+**Regression / audit sample requirement:** Select at least 10 recordings from the past 12 months that should have been deleted. Trace the full lifecycle: consent capture → retention basis → consent expiry or hold release → deletion execution → deletion confirmation. Any break in this chain is a finding. Document the sample methodology, results, and any gaps identified.
+
+---
+
 ## Findings Classification
 
 | Classification | Definition | Regulatory Risk |
@@ -462,6 +519,15 @@ Assess:
 
 ## Risk Analysis Gap Summary
 [Specific deficiencies in the organization's risk analysis per 164.308(a)(1)(ii)(A)]
+
+## Telehealth Recording Retention Assessment
+- Recording systems in scope: [count]
+- Consent-to-recording join status: [joined / siloed / partial]
+- Records with missing consent linkage: [count] ([list or %])
+- Legal holds active: [count] — oldest hold date: [date] — hold-recheck gate: [Yes/No]
+- Deletion job exists: [Yes/No] — last execution: [date] — skipped records with no hold: [count]
+- Audit sample: [N] recordings traced, [breaks found], [methodology]
+- Exception owners assigned: [count] ([list])
 
 ## Remediation Roadmap
 
@@ -570,6 +636,12 @@ Policies, Procedures, and Documentation — 164.316
 4. **Confusing HIPAA Security Rule with HIPAA Privacy Rule.** The Security Rule (Subpart C) applies only to ePHI and focuses on technical, physical, and administrative safeguards. The Privacy Rule (Subpart E) covers all PHI including paper records and addresses permitted uses and disclosures. A Security Rule review does not satisfy Privacy Rule obligations and vice versa.
 
 5. **Failing to document the "why" behind security decisions.** The Security Rule is designed to be flexible and scalable. But that flexibility requires documentation. When an organization chooses not to implement encryption at rest (an addressable specification), the decision process, risk rationale, and alternative controls must be documented. OCR auditors expect written justification, not verbal explanations.
+
+6. **Consent siloed from recording metadata.** Telehealth platforms that record sessions by default often capture consent in a separate scheduling or intake system without a join key to recording metadata. This makes it impossible to prove each retained recording has valid consent at audit time, creating a systemic non-compliance gap.
+
+7. **Legal holds that never expire or recheck.** When deletion jobs skip recordings under legal hold but no mechanism rechecks hold status after release, temporary exceptions become permanent PHI retention. Every legal hold must have a named owner, a scheduled review date, and an automated recheck that re-enters released recordings into the deletion pipeline.
+
+8. **No proof that deletion actually occurs.** Having a retention policy and deletion job is insufficient without evidence that the job runs, covers all applicable recordings, and does not silently skip records. Periodic audit sampling tracing the full consent-to-deletion lifecycle is required to validate that deletion is operational, not aspirational.
 
 ---
 
