@@ -205,9 +205,12 @@ Assess:
 
 Assess:
 - Is there a formal supply chain risk management program?
-- Are suppliers inventoried and prioritized by criticality?
-- Do contracts include cybersecurity requirements?
+- Are suppliers inventoried and prioritized by criticality, data classification, and service dependency?
+- Is supplier evidence tracked at the subcategory level (e.g., GV.SC, ID.AM, DE.CM, RS.CO, RC.RP) ensuring individual gaps are preserved, not aggregated into a single score?
+- Are concentration risks (e.g., shared cloud providers, common subprocessors) identified and noted?
+- Do contracts include cybersecurity requirements, evidence period, scope, and subprocessor coverage?
 - Are suppliers included in incident response planning?
+- Are supplier profile changes linked to the enterprise target profile and risk register?
 
 ---
 
